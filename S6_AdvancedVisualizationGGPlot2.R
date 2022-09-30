@@ -8,7 +8,7 @@ library(hablar)
 library(magrittr)
 
 #---------------Read in data---------------
-movies <- read.csv("S6_HW_Data.csv")
+movies <- read.csv("S6_Movie_Ratings.csv")
 
 #--------Explore data--------
 head(movies)
@@ -22,115 +22,86 @@ movies$Film <- factor(movies$Film)
 movies$Genre <- factor(movies$Genre)
 movies$ReleaseYear <- factor(movies$ReleaseYear)
 
-#-------------------Aesthetics--------------
-#Define geometries
-ggplot(data=movies, aes(x=CriticRating, y=AudienceRating)) + 
-  geom_point()
+#--------Aesthetics--------
+#Mapping aesthetics (x & y)
+ggplot(data=movies, aes(x=CriticRating, 
+                        y=AudienceRating)) + geom_point()
 
-ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, 
-                        color=Genre, size=Budget))
+#Mapping more aesthetics (size & color)
+ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, color=Genre, size=Budget)) 
++ geom_point()
 
-#-------------------Plotting with layers--------------
-
-p <- ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, 
-                             color=Genre, size=Budget))
-
+#--------Plotting with layers--------
+p <- ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, color=Genre, size=Budget))
 p + geom_point()
 
-#multiple layers
-
+#--------Plotting with multiple layers--------
 p + geom_line(size=.4) + geom_point(size=1.5)
 
-#-------------------Overriding aesthetics--------------
-
-p <- ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, 
-                             color=Genre, size=Budget))
-
-p + geom_point()
-
-#Overriding
-
+#--------Overriding aesthetics--------
 p + geom_point(aes(size=CriticRating)) #Ex 1
-
 p + geom_point(aes(color=Budget)) #Ex 2
+p + geom_point(aes(x=Budget)) #Ex 
 
-p + geom_point(aes(x=Budget)) #Ex 3
-
-#-------------------Mapping versus setting--------------
-
+#--------Mapping versus setting--------
+#1.Create base
 r <- ggplot(data=movies, aes(x=CriticRating, y=AudienceRating))
-
 r + geom_point()
 
+#2. Mapping color to a variable
 #Add color
-
-#1. Mapping color to a variable
-
 r + geom_point(aes(color=Genre))
 
-#2. Setting color uniformly 
-
+#3. Setting color uniformly
 r + geom_point(color="DarkGreen")
 
-#-------------------Histograms and density charts--------------
-
+#--------Histograms--------
+#1.Create base
 s <- ggplot(data=movies, aes(x=Budget))
 s + geom_histogram(binwidth = 10)
 
-#add color
-
+#2. Map color
 s + geom_histogram(binwidth = 10, aes(fill=Genre))
 
-#add border
-
+#3. Add color
 s + geom_histogram(binwidth = 10, aes(fill=Genre), color="Black")
 
-
-str(movies$Genre)
-
-#-------------------Starting layer tips--------------
-
+#--------Starting layer tips--------
+# Set aes in base layer when you want to use the same aes over and over
 t <- ggplot(data=movies, aes(x=AudienceRating))
 t + geom_histogram(binwidth=10, 
                    fill="White", color="Blue")
 
-#Another way is to NOT set the aesthetic in the base layer:
+#Don't set aes in base layer when aes may change in visualizations
 t <- ggplot(data=movies)
 t + geom_histogram(aes(x=AudienceRating),
                    binwidth = 10,
                    fill="White", color="Blue")
 
-#-------------------Statistical transformations--------------
-
+#--------Statistical transformations--------
 u <- ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, color=Genre))
-
 u + geom_point(size=1) + geom_smooth(fill=NA, size=1)
 
 #Boxplots
-
 u <- ggplot(data=movies, aes(x=Genre, y=AudienceRating, color=Genre))
-
 u + geom_jitter(size=.25) + geom_boxplot(size=1, alpha=0.5) 
 
-#-------------------Using facets--------------
-
+#--------Using facets--------
+#1. Base visualization (from above)
 v <- ggplot(data=movies, aes(x=Budget))
-
 v + geom_histogram(binwidth=10, aes(fill=Genre), 
                    color="Black")
 
-#Facets
-
+#2. Histogram facet
 v + geom_histogram(binwidth=10, aes(fill=Genre), 
                    color="Black") +
   facet_grid(Genre~., scales="free")
 
-#Scatterplots
-
+#1. Base visualization
 w <- ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, color=Genre))
-
 w + geom_point()
 
+#2. Create facets
 w + geom_point() + 
   facet_grid(Genre~.)
 
@@ -145,18 +116,14 @@ w + geom_point(aes(size=Budget)) +
   geom_smooth() +
   facet_grid(Genre~ReleaseYear)
 
-#-------------------Coordinates--------------
-
+#--------Coordinates--------
 #Setting limits with xlim and ylim
-
 x <- ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, size=Budget, color=Genre))
-
 x + geom_point() +
   xlim(50, 100)
-ylim(50,100)
+  ylim(50,100)
 
 #Zooming
-
 y <- ggplot(data=movies, aes(x=Budget))
 
 y + geom_histogram(binwidth=10, aes(fill=Genre), color="Black") +
@@ -172,19 +139,19 @@ w + geom_point() +
   facet_grid(Genre~ReleaseYear) + 
   coord_cartesian(ylim=c(1,100))
 
-#-------------------Themes--------------
-
+#--------Themes--------
+#1. Create base
 o <- ggplot(data=movies, aes(x=Budget))
 h <- o + geom_histogram(binwidth=10, aes(fill=Genre), color="Black")
 
-#Label formatting
+#2. Label formatting
 h +
   xlab("Budget in Millions") +
   ylab("Number of Movies") +
   theme(axis.title.x = element_text(color="Black", size=10), 
         axis.title.y = element_text(color="Black"))
 
-#Tick mark formatting
+#3. Tick mark formatting
 h +
   xlab("Budget in Millions") +
   ylab("Number of Movies") +
@@ -193,7 +160,7 @@ h +
         axis.text.x = element_text(size=12),
         axis.text.y = element_text(size=12))
 
-#Legend formatting
+#4. Legend formatting
 h +
   xlab("Budget in Millions") +
   ylab("Number of Movies") +
@@ -210,4 +177,3 @@ h +
         
         plot.title = element_text(color="Black", size=20, family="Arial"))
 
-?theme
