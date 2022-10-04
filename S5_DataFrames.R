@@ -1,3 +1,13 @@
+#---------------Load packages---------------
+install.packages("tidyverse")
+install.packages("ggolot2")
+install.packages("hablar")
+library(ggplot2)
+library(dplyr)
+library(hablar)
+library(magrittr)
+
+
 #----------Importing data into R----------
 
 #Method 1: Select the file manually
